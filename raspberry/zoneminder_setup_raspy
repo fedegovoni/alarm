@@ -1,0 +1,71 @@
+#!/bin/bash
+
+apt-get update --assume-yes
+apt-get upgrade --assume-yes
+apt-get dist-upgrade --assume-yes
+
+cat /etc/apt/sources.list > /tmp/sources.list
+echo "deb http://http.debian.net/debian jessie-backports main" > /etc/apt/sources.list
+cat /tmp/sources.list >> /etc/apt/sources.list
+rm /tmp/sources.list
+
+echo "Package: *" > /etc/apt/preferences.d/zoneminder
+echo "Pin: origin http.debian.net" >> /etc/apt/preferences.d/zoneminder
+echo "Pin-Priority: 1100" >> /etc/apt/preferences.d/zoneminder
+
+apt-get update --assume-yes
+
+gpg --keyserver pgpkeys.mit.edu --recv-key  8B48AD6246925553
+gpg -a --export 8B48AD6246925553 | sudo apt-key add -
+gpg --keyserver pgpkeys.mit.edu --recv-key  7638D0442B90D010
+gpg -a --export 7638D0442B90D010 | sudo apt-key add -
+
+apt-get update --assume-yes
+aptitude hold tar
+
+apt-get update --assume-yes
+apt-get dist-upgrade --assume-yes
+
+apt-get install php5 mysql-server php-pear php5-mysql zoneminder libvlc-dev libvlccore-dev vlc --assume-yes
+cd ~
+
+echo "[client]" > .my.cnf
+echo "user=root" >> .my.cnf
+echo "password=Federico94" >> .my.cnf
+
+mysql < /usr/share/zoneminder/db/zm_create.sql
+mysql zm < /home/pi/allarme/zoneminder.sql
+mysql -e "grant select,insert,update,delete,create on zm.* to 'zmuser'@localhost identified by 'zmpass';"
+
+rm .my.cnf
+
+chmod 740 /etc/zm/zm.conf
+chown root:www-data /etc/zm/zm.conf
+ln -s /etc/zm/apache.conf /etc/apache2/conf-enabled/zoneminder.conf
+systemctl enable zoneminder.service
+adduser www-data video
+systemctl start zoneminder.service
+systemctl status zoneminder.service
+a2enmod cgi
+a2enconf zoneminder
+service apache2 restart
+cd /usr/src && wget http://www.andywilcock.com/code/cambozola/cambozola-latest.tar.gz
+tar -xzvf cambozola-latest.tar.gz
+replace 936 with cambozola version downloaded
+cp cambozola-0.936/dist/cambozola.jar /usr/share/zoneminder
+
+sudo su -
+echo "kernel.shmmax = 134217728" >> /etc/sysctl.conf
+exit
+
+sudo su -
+echo "kernel.shmall = 2097152" >> /etc/sysctl.conf
+exit
+
+sudo service apache2 restart
+
+echo "sudo nano /etc/php5/apache2/php.ini"
+echo "ctrl+w to search, and type  date.timezone"
+echo "date.timezone = Europe/London"
+echo ""
+echo "then restart apache2"

@@ -1,0 +1,16 @@
+*/10 * * * * sudo /home/fede/allarme/check-wan-status
+*/10 * * * * sudo /home/fede/allarme/autossh-keep-alive 80 localhost 80 &
+*/10 * * * * sudo /home/fede/allarme/autossh-keep-alive 8022 localhost 22 &
+
+#cameras ports
+*/10 * * * * sudo /home/fede/allarme/autossh-keep-alive 8011 192.168.0.11 81 &
+*/10 * * * * sudo /home/fede/allarme/autossh-keep-alive 8012 192.168.0.12 81 &
+*/10 * * * * sudo /home/fede/allarme/autossh-keep-alive 8013 192.168.0.13 81 &
+
+#samba ports
+*/10 * * * * sudo /home/fede/allarme/autossh-keep-alive 8445 localhost 445 &
+*/10 * * * * sudo /home/fede/allarme/autossh-keep-alive 8139 localhost 139 &
+
+#check route tables
+*/5  * * * * /home/fede/allarme/check_connection.sh
+

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+#sudo python /home/fede/allarme/bot_send_alarm_message.py &
+sudo ssh pi@192.168.0.15 "sudo /home/pi/allarme/cassa" &

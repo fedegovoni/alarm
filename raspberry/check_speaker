@@ -1,0 +1,6 @@
+#!/bin/bash
+
+if [[ `gpio read 26` == 0 && `ps aux | grep omxplayer | wc -l` < 2 ]]; then
+	gpio write 26 1
+	echo cassa spenta > /home/pi/cassa_spenta
+fi

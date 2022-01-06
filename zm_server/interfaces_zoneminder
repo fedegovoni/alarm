@@ -1,0 +1,41 @@
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# per creare l'interfaccia di connessione usb per il modem,
+# dhcpcd
+
+# per avere i nomi delle interfacce corretti andare nel file
+# /etc/default/grub
+# porre il parametro 
+# GRUB_CMDLINE_LINUX="net.ifnames=0 biosdevname=0"
+# e poi eseguire il comando: 
+# sudo grub-mkconfig -o /boot/grub/grub.cfg
+#/etc/resolvconf/resolv.conf.d/head mettere in fondo al file le due righe:
+#nameserver 8.8.8.8
+#nameserver 8.8.4.4
+
+#source /etc/network/interfaces.d/*
+
+# The loopback network interface
+
+auto lo
+iface lo inet loopback
+
+auto wlan0
+iface wlan0 inet static
+	address 192.168.1.10
+	net 192.168.1.0
+	netmask 255.255.255.0
+	dns-nameserver 8.8.8.8
+	wpa-ssid "Mobile Wind"
+	wpa-psk "govonicasa"
+	post-up route add default gw 192.168.1.1
+
+	
+
+allow-hotplug eth0
+iface eth0 inet static
+	address 192.168.0.10
+	netmask 255.255.255.0
+	gateway 192.168.0.1
+	post-up route add default gw 192.168.1.1

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+status=`ssh fede@192.168.0.10 "sudo service zoneminder status" | head -3 | tail -1 | cut -f2 -d'(' | cut -f1 -d')'`
+
+GREEN=27
+YELLOW=28
+RED=29
+
+gpio mode $GREEN out
+gpio mode $YELLOW out
+gpio mode $RED out
+
+if [[ $status == "running" ]]; then
+	gpio write $GREEN 1
+	gpio write $RED 0
+	gpio write $YELLOW 0
+elif [[ $status == "dead" ]]; then
+	gpio write $GREEN 0
+	gpio write $YELLOW 0
+	gpio write $RED 1
+else
+	gpio write $GREEN 1
+        gpio write $YELLOW 1
+        gpio write $RED 1
+fi

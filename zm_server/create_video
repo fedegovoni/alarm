@@ -1,0 +1,20 @@
+#!/bin/bash
+
+cd $1
+
+if [[ `ls | grep "video" | wc -l` > 0 ]]; then
+	exit 0
+fi
+
+for fn in `ls`; do
+	num=`echo "$fn" | cut -f1 -d'-'`
+	type=`echo "$fn" | cut -f2 -d'-'`
+
+	if [[ $type == "analyze.jpg" ]]; then
+		newfn="$num"
+		capture="-capture.jpg"
+		cp "$fn" "$newfn$capture"
+	fi
+done
+
+ffmpeg -framerate 10 -i $1/%05d-capture.jpg -c:v libx264 -profile:v high -crf 20 -pix_fmt yuv420p video.mp4

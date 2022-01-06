@@ -1,0 +1,37 @@
+#!/bin/bash
+
+SSH_USER="root"
+SSH_SERVER="federicogovoni.tk"
+REMOTE_PORT=$1
+IP=$2
+LOCAL_PORT=$3
+LOG="/var/log/autossh-keep-alive.log"
+
+if [[ ! (-f $LOG) ]]; then
+        sudo touch $LOG
+	sudo chmod 666 $LOG
+fi
+
+if [ $# -ne 3 ]; then
+#        echo no port insert\; usage: $0 port. Default port 8000 >> $LOG
+#        REMOTE_PORT="8000"
+	echo $0 REMOTE_PORT IP LOCAL_PORT
+	exit 1
+fi
+
+
+echo `date` autossh-keep-alive invoked by user \= $USER
+
+ps aux | grep $REMOTE_PORT:$IP:$LOCAL_PORT | (while read line; do
+	PID=`echo $line | cut -f2 -d' '`
+	if [[ `sudo netstat -tpn | grep $PID | grep ESTABLISHED | wc -l` == 0 ]]; then
+		echo "NO AUTOSSH DAEMON ACTIVE"
+		sudo kill -9 $PID
+	        sudo autossh -Nf -M 0 -q -o "ServerAliveInterval 60" -o "ServerAliveCountMax 3"  -R *:$REMOTE_PORT:$IP:$LOCAL_PORT root@federicogovoni.tk
+	fi
+done
+
+if [[ ’ps aux | grep $REMOTE_PORT:$IP:$LOCAL_PORT | wc -l’ 
+        sudo autossh -Nf -M 0 -q -o "ServerAliveInterval 60" -o "ServerAliveCountMax 3"  -R *:$REMOTE_PORT:$IP:$LOCAL_PORT root@federicogovoni.tk
+
+)

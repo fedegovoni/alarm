@@ -1,0 +1,35 @@
+#!/bin/bash
+
+USBMOD=$(lsusb | grep Huawei | cut -d' ' -f6)
+while true; do
+	A=`sudo /home/pi/sakis3g status`
+	NETSTAT=`echo $A | cut -f2 -d' '`
+	if [ $NETSTAT != connected ]; then
+
+		echo stato not connected: mi connetto
+		#sudo /home/pi/sakis3g connect  OTHER="USBMODEM" USBMODEM=$USBMOD USBINTERFACE="0"  APN="tre.it"
+
+		#attivo tutti i reverse ssh
+		sudo autossh -Nf -M 0 -q -o "ServerAliveInterval 60" -o "ServerAliveCountMax 3"  -R *:8000:localhost:80 root@federicogovoni.tk
+		sudo autossh -Nf -M 0 -q -o "ServerAliveInterval 60" -o "ServerAliveCountMax 3"  -R *:8011:192.168.0.11:81 root@federicogovoni.tk
+		sudo autossh -Nf -M 0 -q -o "ServerAliveInterval 60" -o "ServerAliveCountMax 3"  -R *:8012:192.168.0.12:81 root@federicogovoni.tk
+		sudo autossh -Nf -M 0 -q -o "ServerAliveInterval 60" -o "ServerAliveCountMax 3"  -R *:8013:192.168.0.13:81 root@federicogovoni.tk
+		sudo autossh -Nf -M 0 -q -o "ServerAliveInterval 60" -o "ServerAliveCountMax 3"  -R *:8022:localhost:22 root@federicogovoni.tk
+	else
+		ping -c 1 www.google.it
+		if [ $? != 0 ]; then
+			echo sono connesso ma non riesco a pingare google
+			sudo /home/pi/sakis3g disconnect
+			sudo /home/pi/sakis3g connect  OTHER="USBMODEM" USBMODEM=$USBMOD USBINTERFACE="0"  APN="tre.it"
+
+	                #attivo tutti i reverse ssh
+       			sudo autossh -Nf -M 0 -q -o "ServerAliveInterval 60" -o "ServerAliveCountMax 3"  -R *:8000:localhost:80 root@federicogovoni.tk
+        	        sudo autossh -Nf -M 0 -q -o "ServerAliveInterval 60" -o "ServerAliveCountMax 3"  -R *:8011:192.168.0.11:81 root@federicogovoni.tk
+                	sudo autossh -Nf -M 0 -q -o "ServerAliveInterval 60" -o "ServerAliveCountMax 3"  -R *:8012:192.168.0.12:81 root@federicogovoni.tk
+               		sudo autossh -Nf -M 0 -q -o "ServerAliveInterval 60" -o "ServerAliveCountMax 3"  -R *:8013:192.168.0.13:81 root@federicogovoni.tk
+                	sudo autossh -Nf -M 0 -q -o "ServerAliveInterval 60" -o "ServerAliveCountMax 3"  -R *:8022:localhost:22 root@federicogovoni.tk
+		fi
+	fi
+	sleep 60
+done
+

@@ -1,0 +1,31 @@
+#!/bin/bash
+#
+# Restart network interfaces
+# if ppp0 3G connection is down
+
+PING="/bin/ping -q -c1 -W 10 -I eth1"
+HOST=8.8.8.8
+LOG="/var/log/check-wan-status.log"
+
+if [[ ! (-f $LOG) ]]; then
+	sudo touch $LOG
+	sudo chmod 666 $LOG
+fi
+
+echo `date` $USER  execute check-wan-status >> $LOG
+
+${PING} ${HOST}
+if [ $? -ne 0 ]; then
+        echo "3G (ppp0) network connection is down! Attempting reconnection."
+
+	ps aux | grep wvdial | (while read line; do
+		pid=`echo $line | cut -f2 -d' '`
+		sudo kill -9 $pid
+	done
+	)
+	sudo ifdown --force eth1
+	sleep 10
+	sudo ifup --force eth1
+	sleep 10
+
+fi

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+case "$(sudo gpio read 26)" in
+1)
+	#riproduzione audio e gestione relay
+	sudo gpio write 26 0
+	omxplayer /home/pi/allarme/Cane.mp3 &
+	sleep 50
+	sudo killall omxplayer
+	sudo killall omxplayer.bin
+	sudo gpio write 26 1
+	;;
+*)
+	;;
+esac
